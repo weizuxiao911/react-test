@@ -4,6 +4,27 @@
 
 a document editor plugin to enable markdown syntax, based on react.
 
+# Structure
+
+```bash
+
+| config                        # webpack
+ - - | webpack.base.js
+ - - | webpack.dev.js
+ - - | webpack.build.js
+| example                       # to test
+ - - | src
+ - - - - | index.html
+ - - - - | index.scss
+ - - - - | index.tsx            # use this
+| src                           # resource
+ - - | lib                      # lib
+ - - - - | *.tsx                
+ - - | index.d.ts               # to enable scss syntax
+ - - | index.tsx                # entry
+
+```
+
 # Dependencies
 
 ```json

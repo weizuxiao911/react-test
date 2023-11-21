@@ -1,10 +1,10 @@
-@imarkjs/remark-editor
+# @imarkjs/remark-editor
 
-# Introduction
+## Introduction
 
-a document editor plugin to enable markdown syntax, based on react.
+A document editor plugin to enable markdown syntax, based on react.
 
-# Structure
+## Structure
 
 ```bash
 
@@ -25,7 +25,7 @@ a document editor plugin to enable markdown syntax, based on react.
 
 ```
 
-# Dependencies
+## Dependencies
 
 ```json
 
@@ -41,7 +41,7 @@ a document editor plugin to enable markdown syntax, based on react.
 
 ```
 
-# Example 
+## Example 
 
 ```typescript
 

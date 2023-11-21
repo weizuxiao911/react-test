@@ -1,14 +1,23 @@
 {
-  "name": "react-test",
+  "name": "@imarkjs/remark-editor",
+  "description": "a document editor plugin based on markdown syntax.",
   "version": "1.0.0",
-  "description": "",
-  "main": "/src/index.tsx",
+  "license": "MIT",
+  "author": "weizuxiao <727897965@qq.com>",
+  "keywords": [
+    "unifiedjs",
+    "document",
+    "editor",
+    "markdown"
+  ],
+  "exports": "./index.js",
+  "files": [
+    "lib/"
+  ],
   "scripts": {
     "start": "webpack-dev-server --config config/webpack.dev.js",
     "build": "webpack --config config/webpack.build.js"
   },
-  "author": "weizuxiao",
-  "license": "MIT",
   "devDependencies": {
     "@babel/cli": "^7.23.0",
     "@babel/core": "^7.23.3",
@@ -40,5 +49,8 @@
     "remark-parse": "^11.0.0",
     "remark-stringify": "^11.0.0",
     "unified": "^11.0.4"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

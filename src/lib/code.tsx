@@ -12,6 +12,7 @@ export const Code = (props?: any) => {
 
     const onDataChanged = (value: string | undefined) => {
         props.context.node.value = value
+        props?.context?.reflush()
     }
 
     return <MonacoEditor

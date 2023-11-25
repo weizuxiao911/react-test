@@ -4,10 +4,13 @@ import remarkStringify from 'remark-stringify'
 import remarkCode from '@imarkjs/remark-code'
 import { unified } from 'unified'
 import { types } from './lib/types'
+import './index.css'
 
 /** remark editor props */
 export type RemarkEditorProps = {
+    /**  */
     value?: string
+
 }
 
 /** remark editor */
@@ -28,9 +31,11 @@ export const RemarkEditor = forwardRef((props: RemarkEditorProps, ref: any) => {
     const [tree, setTree] = useState<any>()
     const [child, setChild] = useState<any>()
 
-    const print = () => {
+    /** reflush */
+    const reflush = () => {
         console.log(tree)
-        setTree(tree)
+        const t = JSON.parse(JSON.stringify(tree))
+        setTree(t)
     }
 
     /** create node element */
@@ -51,7 +56,7 @@ export const RemarkEditor = forwardRef((props: RemarkEditorProps, ref: any) => {
                 node: node,
                 parent: parent,
                 children: node?.children ?? [],
-                print: print
+                reflush: reflush
             }
         }
         const target = types[node?.type]
@@ -67,9 +72,11 @@ export const RemarkEditor = forwardRef((props: RemarkEditorProps, ref: any) => {
         setTree(_tree)
     }, [props?.value])
 
+    /**  */
     useEffect(() => {
         const _root = createNodeElement(tree)
         setChild(_root)
+        console.log('tree', _root)
     }, [tree])
 
     /**  */

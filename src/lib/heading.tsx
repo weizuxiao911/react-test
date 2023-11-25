@@ -5,6 +5,7 @@ export const Heading = (props?: any) => {
     const onDataChanged = (e: any) => {
         if (13 === e?.keyCode) {
             e.target.blur()
+            return false
         }
     }
 
@@ -14,13 +15,18 @@ export const Heading = (props?: any) => {
         props.context.children[0].value = value
         e.stopPropagation()
         e.preventDefault()
-        props.context.print()
+        props?.context?.reflush()
         return false
     }
 
     const create = () => {
         const tag = `h${props?.depth}`
-        const h = createElement(tag, { contentEditable: true, onKeyUp: onDataChanged, onBlur:onBlur }, props?.children)
+        const h = createElement(tag, {
+            suppressContentEditableWarning: true,
+            contentEditable: true,
+            onKeyDown: onDataChanged,
+            onBlur: onBlur
+        }, props?.children)
         return h
     }
 

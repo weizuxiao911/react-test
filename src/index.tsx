@@ -1,84 +1,117 @@
-import React, { Fragment, createElement, forwardRef, useEffect, useRef, useState } from 'react'
-import remarkParse from 'remark-parse'
-import remarkStringify from 'remark-stringify'
-import remarkCode from '@imarkjs/remark-code'
-import { unified } from 'unified'
-import { types } from './lib/types'
-import './index.css'
+import React, { forwardRef, useEffect, useRef, useState } from 'react'
+import { types } from './lib/_'
+import { parse, format } from './utils'
 
-/** remark editor props */
 export type RemarkEditorProps = {
     /**  */
     value?: string
-
 }
 
 /** remark editor */
 export const RemarkEditor = forwardRef((props: RemarkEditorProps, ref: any) => {
 
-    /** Parser */
-    const parser = unified()
-        .use(remarkParse)
-        .use(remarkCode)
+    const focusIdRef = useRef<string>()
+    const contextRef = useRef<string>()
+    const [root, setRoot] = useState<any>()
 
-    /** Stringifier */
-    const stringifier = unified()
-        .use(remarkParse)
-        .use(remarkCode)
-        .use(remarkStringify)
-
-    /** Tree */
-    const [tree, setTree] = useState<any>()
-    const [child, setChild] = useState<any>()
-
-    /** reflush */
-    const reflush = () => {
-        console.log(tree)
-        const t = JSON.parse(JSON.stringify(tree))
-        setTree(t)
+    /** 更新节点 */
+    const updateNode = (_node: any) => {
+        const _ast = parse(contextRef.current)
+        const _index = _node?.id?.match(/\d{1,3}/g)?.map((it: string) => Number(it))
+        let _n = _ast
+        for (let i = 0; i < _index?.length; i++) {
+            _n && _n?.children && (_n = _n?.children[_index[i]])
+        }
+        Object.assign(_n, _node) // 指针
+        focusIdRef.current = _node?.id
+        contextRef.current = format(_ast)
+        const __ast = parse(contextRef.current)
+        const _root = render(__ast)
+        setRoot(_root)
+        setRoot(_root)
     }
 
-    /** create node element */
-    const createNodeElement = (node: any, parent?: any) => {
-        if (!node || !node?.type) {
-            return createElement(Fragment, null)
+    /** 在节点前插入 */
+    const insertBeforeNode = (_node: any) => {
+        const _ast = parse(contextRef.current)
+        const _index = _node?.id?.match(/\d{1,3}/g)?.map((it: string) => Number(it))
+        let _n = _ast
+        for (let i = 0; i < _index?.length - 1; i++) {
+            _n && _n?.children && (_n = _n?.children[_index[i]])
         }
-        const children: any[] = []
-        if (node?.children?.length) {
-            for (let i = 0; i < node.children.length; i++) {
-                const child = createNodeElement(node.children[i], node)
-                children.push(child)
-            }
-        }
-        const props = {
-            ...node,
-            context: {
-                node: node,
-                parent: parent,
-                children: node?.children ?? [],
-                reflush: reflush
-            }
-        }
-        const target = types[node?.type]
-        if (!children.length) {
-            return createElement(target, props)
-        }
-        return createElement(target, props, ...children)
+        const _currentIndex = _index.pop()
+        _n.children.splice(_currentIndex, 0, _node)
+        const _current = [..._index, _currentIndex].map(it => it?.toString()?.padStart(3, '0')).join('')
+        focusIdRef.current = _current
+        console.log(_current)
+        contextRef.current = format(_ast)
+        const __ast = parse(contextRef.current)
+        const _root = render(__ast)
+        setRoot(_root)
+        setRoot(_root)
     }
 
-    /**  */
+    /** 在节点后插入 */
+    const insertAfterNode = (_node: any) => {
+        const _ast = parse(contextRef.current)
+        const _index = _node?.id?.match(/\d{1,3}/g)?.map((it: string) => Number(it))
+        let _n = _ast
+        for (let i = 0; i < _index?.length - 1; i++) {
+            _n && _n?.children && (_n = _n?.children[_index[i]])
+        }
+        const _currentIndex = _index.pop() + 1
+        _n.children.splice(_currentIndex, 0, _node)
+        const _current = [..._index, _currentIndex].map(it => it?.toString()?.padStart(3, '0')).join('')
+        focusIdRef.current = _current
+        console.log(_current)
+        contextRef.current = format(_ast)
+        const __ast = parse(contextRef.current)
+        const _root = render(__ast)
+        setRoot(_root)
+        setRoot(_root)
+    }
+
+    /** 渲染元素 */
+    const render = (_node: any, _parent?: any) => {
+        const _type = types[_node?.type ?? ''] ?? null
+        if (_type) {
+            let _childrenElement = []
+            if (_node?.children?.length) {
+                _childrenElement = _node?.children?.map((child: any) => {
+                    return render(child, _node)
+                })
+            }
+            return React.createElement(_type, {
+                ..._node,
+                node: _node,
+                parent: _parent,
+                focusId: focusIdRef?.current,
+                context: {
+                    updateNode,
+                    insertBeforeNode,
+                    insertAfterNode,
+                },
+            }, _childrenElement?.length ? _childrenElement : _node?.value ?? '')
+        }
+        return <></>
+    }
+
+    /** 监听元素 */
     useEffect(() => {
-        const _tree = parser.parse(props?.value ?? '')
-        setTree(_tree)
+        console.log(contextRef.current)
+    }, [root])
+
+    /** 监听数据 */
+    useEffect(() => {
+        if (!(/---\n[\s\S]*?\n---\n/g.test((props?.value ?? '')?.trim()))) {
+            contextRef.current = `---\n---\n\n${(props?.value ?? '&#x20;')?.trim()}`
+        } else {
+            contextRef.current = (props?.value ?? '&#x20;').trim()
+        }
+        const _ast = parse(contextRef.current)
+        const _root = render(_ast)
+        setRoot(_root)
     }, [props?.value])
 
-    /**  */
-    useEffect(() => {
-        const _root = createNodeElement(tree)
-        setChild(_root)
-        console.log('tree', _root)
-    }, [tree])
-
-    /**  */
-    return <>{child}</>
+    return root
 })

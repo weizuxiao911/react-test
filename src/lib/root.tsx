@@ -1,8 +1,13 @@
-import React, { useEffect } from "react"
+import React from "react"
+import './_.css'
 
 export const Root = (props: any) => {
-    useEffect(() => {
-        console.log(props)
-    }, [])
-    return <div suppressContentEditableWarning={true} className={props?.className ?? ''}>{props?.children}</div>
+
+    return <div
+        key={props?.id? props?.id : '_root'}
+        id={props?.id ? props?.id : '_root'}
+        className="editor"
+        suppressContentEditableWarning={true}
+    >{props?.children}</div>
+
 }

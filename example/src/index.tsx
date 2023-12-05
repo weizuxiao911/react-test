@@ -1,23 +1,43 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { createRoot } from 'react-dom/client'
 import { RemarkEditor } from '../../src/index'
 import './index.scss'
 
-const str = `# title1
+const str2 = `
+---
+title:  测试
+---
+
+hello
+
+# title
+
+12345
+67890
+
 ## title2
-### \`title3\`12121
-#### title4
-##### title5
-###### title6
-\`\`\`javascript meta
-let s = 'hi'
-console.log(s)
-\`\`\`{{properties}}
+
 `
 
 const App = () => {
+
+    const [text, setText] = useState<string>()
+
+    useEffect(() => {
+
+        const file = 'https://statics.oscollege.net/1b16262f-5cdb-463f-9187-d85a64fcae12.pdf'
+
+        // fetch(file).then(data => {
+        //     console.log(data)
+        // }).catch(error => {
+        //     console.error(error)
+        // })
+
+    }, [])
+
+
     return (
-        <RemarkEditor value={str}></RemarkEditor>
+        <RemarkEditor value={text?.trim()}></RemarkEditor>
     )
 }
 const container = document.getElementById('root')

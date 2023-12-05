@@ -1,5 +1,6 @@
-import React, { createElement, useEffect, useState } from "react"
+import React from "react"
 
 export const Text = (props: any) => {
-    return <>{props?.value}</>
+
+    return <>{props?.value ?? ''}</>
 }

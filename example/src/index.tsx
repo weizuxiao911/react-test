@@ -37,7 +37,7 @@ const App = () => {
 
 
     return (
-        <RemarkEditor value={text?.trim()}></RemarkEditor>
+        <RemarkEditor></RemarkEditor>
     )
 }
 const container = document.getElementById('root')

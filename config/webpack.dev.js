@@ -53,7 +53,7 @@ const devConfig = {
     },
     devServer: {
         static: path.join(__dirname, '../example/src/'),
-        host: '127.0.0.1',
+        host: '0.0.0.0',
         port: 1234,
         historyApiFallback: true,
         compress: true,

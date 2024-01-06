@@ -1,0 +1,34 @@
+[contenteditable] *:empty::before {
+    content: attr(placeholder);
+    color: #999;
+}
+
+[contenteditable]:focus {
+	outline: none;
+}
+
+.editor {
+    display: flex;
+    flex-direction: column;
+    min-width: 100%;
+    min-height: 36px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.paragraph {
+    width: 100%;
+    height: 100%;
+    min-height: 16px;
+    padding-left: 5px;
+}
+
+.paragraph .menu {
+    display: none;
+}
+
+/* .paragraph:hover .menu {
+    display: inline-flex;
+} */
+
+

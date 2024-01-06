@@ -1,117 +1,93 @@
-import React, { forwardRef, useEffect, useRef, useState } from 'react'
-import { types } from './lib/_'
-import { parse, format } from './utils'
-
-export type RemarkEditorProps = {
-    /**  */
-    value?: string
-}
+import React, { createElement, forwardRef, useEffect, useRef, useState } from 'react'
+import './index.css'
 
 /** remark editor */
-export const RemarkEditor = forwardRef((props: RemarkEditorProps, ref: any) => {
+export const RemarkEditor = () => {
 
-    const focusIdRef = useRef<string>()
-    const contextRef = useRef<string>()
-    const [root, setRoot] = useState<any>()
+    const placeholder = `press '/' for commands...`
 
-    /** 更新节点 */
-    const updateNode = (_node: any) => {
-        const _ast = parse(contextRef.current)
-        const _index = _node?.id?.match(/\d{1,3}/g)?.map((it: string) => Number(it))
-        let _n = _ast
-        for (let i = 0; i < _index?.length; i++) {
-            _n && _n?.children && (_n = _n?.children[_index[i]])
+    const ref = useRef<any>()
+
+    const observer = new MutationObserver((mutations) => {
+        console.log('editor...')
+        console.log(mutations)
+        if (!ref.current.childNodes?.length) {
+            createParagraph()
+            return false
         }
-        Object.assign(_n, _node) // 指针
-        focusIdRef.current = _node?.id
-        contextRef.current = format(_ast)
-        const __ast = parse(contextRef.current)
-        const _root = render(__ast)
-        setRoot(_root)
-        setRoot(_root)
+        const selection = document.getSelection()
+        // console.log(selection)
+    })
+
+    const createParagraph = () => {
+        const menu = document.createElement('span')
+        menu.setAttribute('class', 'menu')
+        menu.setAttribute('contentEditable', 'false')
+        menu.textContent = ''
+        const content = document.createElement('span')
+        content.setAttribute('class', 'content')
+        content.setAttribute('placeholder', placeholder)
+        const paragraph = document.createElement('div')
+        paragraph.setAttribute('class', 'paragraph')
+        paragraph.setAttribute('draggable', 'true')
+        paragraph.appendChild(menu)
+        paragraph.appendChild(content)
+        ref.current.appendChild(paragraph)
+        paragraph.focus()
+
+        const _observer = new MutationObserver((mutations) => {
+            console.log('paragraph...')
+            console.log(mutations)
+            mutations.filter(it => it.addedNodes && it.addedNodes[0]?.nodeName === '#text').forEach(it => content.appendChild(it.addedNodes[0]))
+
+        })
+
+        _observer.observe(paragraph, {
+            childList: true
+        })
+
+        return paragraph
     }
 
-    /** 在节点前插入 */
-    const insertBeforeNode = (_node: any) => {
-        const _ast = parse(contextRef.current)
-        const _index = _node?.id?.match(/\d{1,3}/g)?.map((it: string) => Number(it))
-        let _n = _ast
-        for (let i = 0; i < _index?.length - 1; i++) {
-            _n && _n?.children && (_n = _n?.children[_index[i]])
-        }
-        const _currentIndex = _index.pop()
-        _n.children.splice(_currentIndex, 0, _node)
-        const _current = [..._index, _currentIndex].map(it => it?.toString()?.padStart(3, '0')).join('')
-        focusIdRef.current = _current
-        console.log(_current)
-        contextRef.current = format(_ast)
-        const __ast = parse(contextRef.current)
-        const _root = render(__ast)
-        setRoot(_root)
-        setRoot(_root)
-    }
-
-    /** 在节点后插入 */
-    const insertAfterNode = (_node: any) => {
-        const _ast = parse(contextRef.current)
-        const _index = _node?.id?.match(/\d{1,3}/g)?.map((it: string) => Number(it))
-        let _n = _ast
-        for (let i = 0; i < _index?.length - 1; i++) {
-            _n && _n?.children && (_n = _n?.children[_index[i]])
-        }
-        const _currentIndex = _index.pop() + 1
-        _n.children.splice(_currentIndex, 0, _node)
-        const _current = [..._index, _currentIndex].map(it => it?.toString()?.padStart(3, '0')).join('')
-        focusIdRef.current = _current
-        console.log(_current)
-        contextRef.current = format(_ast)
-        const __ast = parse(contextRef.current)
-        const _root = render(__ast)
-        setRoot(_root)
-        setRoot(_root)
-    }
-
-    /** 渲染元素 */
-    const render = (_node: any, _parent?: any) => {
-        const _type = types[_node?.type ?? ''] ?? null
-        if (_type) {
-            let _childrenElement = []
-            if (_node?.children?.length) {
-                _childrenElement = _node?.children?.map((child: any) => {
-                    return render(child, _node)
-                })
+    useEffect(() => {
+        if (ref.current) {
+            observer.observe(ref.current, {
+                childList: true
+            })
+            // console.log(ref.current.childNodes)
+            if (!ref.current.childNodes?.length) {
+                createParagraph()
             }
-            return React.createElement(_type, {
-                ..._node,
-                node: _node,
-                parent: _parent,
-                focusId: focusIdRef?.current,
-                context: {
-                    updateNode,
-                    insertBeforeNode,
-                    insertAfterNode,
-                },
-            }, _childrenElement?.length ? _childrenElement : _node?.value ?? '')
         }
-        return <></>
-    }
+    }, [])
 
-    /** 监听元素 */
-    useEffect(() => {
-        console.log(contextRef.current)
-    }, [root])
-
-    /** 监听数据 */
-    useEffect(() => {
-        if (!(/---\n[\s\S]*?\n---\n/g.test((props?.value ?? '')?.trim()))) {
-            contextRef.current = `---\n---\n\n${(props?.value ?? '&#x20;')?.trim()}`
-        } else {
-            contextRef.current = (props?.value ?? '&#x20;').trim()
-        }
-        const _ast = parse(contextRef.current)
-        const _root = render(_ast)
-        setRoot(_root)
-    }, [props?.value])
-
-    return root
-})
+    return <>
+        <div ref={ref} className='editor' contentEditable='true'>
+        <h2>
+  Hi there,
+</h2>
+<p>
+  this is a <em>basic</em> example of <strong>tiptap</strong>. Sure, there are all kind of basic text styles you’d probably expect from a text editor. But wait until you see the lists:
+</p>
+<ul>
+  <li>
+    That’s a bullet list with one …
+  </li>
+  <li>
+    … or two list items.
+  </li>
+</ul>
+<p>
+  Isn’t that great? And all of that is editable. But wait, there’s more. Let’s try a code block:
+</p>
+<p>
+  I know, I know, this is impressive. It’s only the tip of the iceberg though. Give it a try and click a little bit around. Don’t forget to check the other examples too.
+</p>
+<blockquote>
+  Wow, that’s amazing. Good work, boy! 👏
+  <br />
+  — Mom
+</blockquote>
+        </div>
+    </>
+}

@@ -15,7 +15,7 @@ const buildConfig = {
     module: {
         rules: [
             {
-                test: /.s[ac]ss$/,
+                test: /.s[ac]ss|.css$/,
                 exclude: /.min.css$/,
                 use: [
                     { loader: MiniCssExtractPlugin.loader },

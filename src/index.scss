@@ -1,9 +1,9 @@
-[contenteditable] *:empty::before {
+*:empty::before {
     content: attr(placeholder);
     color: #999;
 }
 
-[contenteditable]:focus {
+:focus {
 	outline: none;
 }
 

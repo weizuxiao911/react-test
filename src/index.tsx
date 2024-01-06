@@ -1,5 +1,5 @@
 import React, { createElement, forwardRef, useEffect, useRef, useState } from 'react'
-import './index.css'
+import './index.scss'
 
 /** remark editor */
 export const RemarkEditor = () => {
